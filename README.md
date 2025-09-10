@@ -23,6 +23,12 @@ okta/
 
 1. Initialize the project:
    ```bash
+   cp DOTENV .envrc
+   # Modifiy .envrc with your environment variables
+   direnv allow
+   ```
+
+   ```bash
    make init
    ```
 
