@@ -1,3 +1,7 @@
 # Copy and rename this file to .envrc and fill in your actual values
 export KEY_ID="your_key_id_here"
 export KEY_SECRET="your_key_secret_here"
+export UV_VENV_CLEAR=1
+export OKTA_TEAM=nos-coastal-modeling-cloud-sandbox
+export OKTA_ORG=noaa
+export OKTA_TARGET_PROJECT=Login_Users

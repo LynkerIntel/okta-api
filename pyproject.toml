@@ -2,6 +2,10 @@
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+# Project configuration variables
+[tool.project-config]
+min_coverage_percentage = 65
+
 [project]
 name = "okta-api"
 version = "0.1.0"
@@ -30,6 +34,8 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "coverage[toml]>=7.0.0",
     "black>=23.0.0",
     "flake8>=6.0.0",
     "mypy>=1.0.0",
@@ -65,7 +71,27 @@ warn_return_any = false
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-ra -q"
+# Coverage threshold defined in [tool.project-config] section above (65%)
+addopts = "-ra -q --cov=src/okta_api_script --cov-report=term-missing --cov-fail-under=65"
 testpaths = [
     "tests",
 ]
+
+[tool.coverage.run]
+source = ["src/okta_api_script"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ .__main__.:",
+]
+# Coverage threshold defined in [tool.project-config] section above (65%)
+fail_under = 65
+show_missing = true
