@@ -54,6 +54,7 @@ def get_projects_by_resource_group(bearer_token: str, org_name: str, team_name: 
     response = requests.get(url, headers=headers)
     response.raise_for_status()
     list =  response.json()["list"]
+    print(f"Projects in resource group {resource_group_id}: {list}")
     return [ { "id": r["id"], "name": r["name"] } for r in list if r["deleted_at"] is None]
   except requests.exceptions.RequestException as e:
     print(f"Error fetching projects: {e}")
