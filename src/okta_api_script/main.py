@@ -16,8 +16,8 @@ def main() -> None:
     team_name = os.getenv("OKTA_TEAM")
     org_name = os.getenv("OKTA_ORG")
     target_project = os.getenv("OKTA_TARGET_PROJECT")
-    if not team_name or not org_name:
-        raise ValueError("TEAM_NAME and ORG_NAME environment variables must be set")
+    if not team_name or not org_name or not target_project:
+        raise ValueError("TEAM_NAME, ORG_NAME, and TARGET_PROJECT environment variables must be set")
 
     # Get credentials from environment variables
     key_id = os.getenv("KEY_ID")
