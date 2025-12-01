@@ -2,6 +2,7 @@
 
 import json
 import os
+import sys
 
 import requests
 from services.enrollment import generate_server_enrollment_token
@@ -72,9 +73,9 @@ def execute_api_cycle(
         # projects = get_projects_by_team(bearer_token, org_name, team_name)
         # print(projects)
     except requests.exceptions.RequestException as e:
-        print(f"Error making API request: {e}", file=os.sys.stderr)
+        print(f"Error making API request: {e}", file=sys.stderr)
     except ValueError as e:
-        print(f"Configuration error: {e}", file=os.sys.stderr)
+        print(f"Configuration error: {e}", file=sys.stderr)
 
 
 if __name__ == "__main__":

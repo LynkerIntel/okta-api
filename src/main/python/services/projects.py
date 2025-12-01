@@ -1,4 +1,4 @@
-import os
+import sys
 from typing import Any, cast
 
 import requests
@@ -31,5 +31,5 @@ def get_projects_by_team(
         response.raise_for_status()
         return cast(list[dict[str, Any]], response.json())
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching projects: {e}", file=os.sys.stderr)
+        print(f"Error fetching projects: {e}", file=sys.stderr)
         return []

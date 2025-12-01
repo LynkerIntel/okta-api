@@ -120,6 +120,7 @@ def test_main_request_exception():
                 # Verify error was printed to stderr
                 error_msg = "Error making API request: Connection error"
                 import sys
+
                 mock_print.assert_called_with(error_msg, file=sys.stderr)
 
 
@@ -142,6 +143,7 @@ def test_main_value_error_from_api():
                 # Verify error was printed to stderr
                 error_msg = "Configuration error: Invalid response format"
                 import sys
+
                 mock_print.assert_called_with(error_msg, file=sys.stderr)
 
 

@@ -1,4 +1,4 @@
-import os
+import sys
 from typing import Any, cast
 
 import requests
@@ -67,5 +67,5 @@ def get_projects_by_resource_group(
             {"id": r["id"], "name": r["name"]} for r in list if r["deleted_at"] is None
         ]
     except requests.exceptions.RequestException as e:
-        print(f"Error fetching projects: {e}", file=os.sys.stderr)
+        print(f"Error fetching projects: {e}", file=sys.stderr)
         return []
