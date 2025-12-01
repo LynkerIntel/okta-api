@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 # Project configuration variables
 [tool.project-config]
-min_coverage_percentage = 65
+min_coverage_percentage = 91
 
 [project]
 name = "okta-api"
@@ -29,6 +29,7 @@ classifiers = [
 
 dependencies = [
     "requests>=2.31.0",
+    "click>=8.0.0",
 ]
 
 [project.optional-dependencies]
@@ -37,26 +38,39 @@ dev = [
     "pytest-cov>=4.0.0",
     "coverage[toml]>=7.0.0",
     "black>=23.0.0",
-    "flake8>=6.0.0",
+    "ruff>=0.1.0",
     "mypy>=1.0.0",
     "types-requests>=2.31.0",
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/okta-api-script"
-Repository = "https://github.com/yourusername/okta-api-script"
-Issues = "https://github.com/yourusername/okta-api-script/issues"
+Homepage = "https://github.com/LynkerIntel/okta-api-script"
+Repository = "https://github.com/LynkerIntel/okta-api-script"
+Issues = "https://github.com/LynkerIntel/okta-api-script/issues"
 
 [project.scripts]
-okta-script = "okta_api_script.cli:main"
+okta-server-enrollment-token = "okta_api_script.cli:cli"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/okta_api_script"]
+packages = ["src/main/python/okta_api_script"]
 
 [tool.black]
 line-length = 88
-target-version = ['py311']
+target-version = ["py311"]
 include = '\.pyi?$'
+exclude = '''
+/(
+  \.git
+  | \.venv
+  | \.uv
+  | build
+  | dist
+  | \.eggs
+  | \.mypy_cache
+  | \.pytest_cache
+  | __pycache__
+)/
+'''
 
 [tool.mypy]
 python_version = "3.11"
@@ -71,14 +85,14 @@ warn_return_any = false
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-# Coverage threshold defined in [tool.project-config] section above (65%)
-addopts = "-ra -q --cov=src/okta_api_script --cov-report=term-missing --cov-fail-under=65"
+# Coverage threshold defined in [tool.project-config] section above (91%)
+addopts = "-ra -q --cov=src/main/python/okta_api_script --cov-report=term-missing --cov-fail-under=91"
 testpaths = [
-    "tests",
+    "src/test/python",
 ]
 
 [tool.coverage.run]
-source = ["src/okta_api_script"]
+source = ["src/main/python/okta_api_script"]
 branch = true
 
 [tool.coverage.report]
@@ -92,6 +106,44 @@ exclude_lines = [
     "if 0:",
     "if __name__ .__main__.:",
 ]
-# Coverage threshold defined in [tool.project-config] section above (65%)
-fail_under = 65
+# Coverage threshold defined in [tool.project-config] section above (91%)
+fail_under = 91
 show_missing = true
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+include = [
+    "src/main/python/**/*.py",
+    "src/test/python/**/*.py",
+]
+exclude = [
+    ".git",
+    "__pycache__",
+    ".venv",
+    ".env",
+    "venv",
+    "env",
+    "build",
+    "dist",
+    "*.egg-info",
+    ".pytest_cache",
+    ".mypy_cache",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "B",    # flake8-bugbear
+    "C4",   # flake8-comprehensions
+    "UP",   # pyupgrade
+]
+ignore = [
+    "E203",  # space before ':' (conflicts with black)
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["okta_api_script"]

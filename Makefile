@@ -1,99 +1,96 @@
-.PHONY: help init install sync run clean test test-cov coverage lint format check check-config
+.PHONY: help init install sync run clean clean-venv test test-cov coverage lint format fix check check-config init-dev build
 
-# Default target
-help:
+# Default target - show help
+help: ## Show this help message
 	@echo "Available targets:"
-	@echo "  init       - Initialize the project with uv (create venv and install dependencies)"
-	@echo "  install    - Install project dependencies using uv"
-	@echo "  sync       - Sync dependencies from pyproject.toml"
-	@echo "  run        - Run the API script using uv"
-	@echo "  run-cli    - Run the API script via CLI entry point"
-	@echo "  test       - Run tests using uv"
-	@echo "  test-cov   - Run tests with coverage report (pytest-cov)"
-	@echo "  coverage   - Run coverage using coverage.py directly"
-	@echo "  check-config - Check that coverage configuration is consistent"
-	@echo "  lint       - Run linting with flake8"
-	@echo "  format     - Format code with black"
-	@echo "  check      - Run type checking with mypy"
-	@echo "  dev-install - Install development dependencies"
-	@echo "  clean      - Clean up generated files and cache"
+	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-15s - %s\n", $$1, $$2}'
 
 # Initialize project with uv
-init:
+init: ## Initialize the project with uv (create venv and install dependencies)
 	@echo "Initializing project with uv..."
 	uv venv
-	uv sync
+	uv sync --extra dev
 	@echo "Project initialized! Activate the virtual environment with: source .venv/bin/activate"
 
 # Install dependencies
-install:
+install: ## Install project dependencies using uv
 	@echo "Installing dependencies..."
 	uv add requests
 
 # Sync all dependencies from pyproject.toml
-sync:
+sync: ## Sync dependencies from pyproject.toml
 	@echo "Syncing dependencies from pyproject.toml..."
 	uv sync
 
 # Run the API script
-run:
+run: ## Run the API script using uv
 	@echo "Running API script..."
-	uv run python -m okta_api_script.main
+	uv run python -m src.main.python.okta_api_script.main
 
 # Alternative: run using the CLI entry point
-run-cli:
+run-cli: ## Run the API script via CLI entry point
 	@echo "Running API script via CLI..."
 	uv run okta-script
 
 # Install and run with development dependencies
-dev-install:
+init-dev: ## Initialize development environment
 	@echo "Installing development dependencies..."
 	uv sync --extra dev
 
 # Run tests
-test:
+test: ## Run tests using uv
 	@echo "Running tests..."
 	uv run pytest
 
 # Run tests with coverage
-test-cov:
+test-cov: ## Run tests with coverage report (pytest-cov)
 	@echo "Running tests with coverage..."
-	uv run pytest --cov=src/okta_api_script --cov-report=html --cov-report=term
+	uv run pytest --cov=src/main/python/okta_api_script --cov-report=html --cov-report=term
 
 # Run coverage using coverage.py directly
-coverage:
+coverage: ## Run coverage using coverage.py directly
 	@echo "Running coverage with coverage.py..."
-	uv run coverage run --source=src/okta_api_script -m pytest tests/
+	uv run coverage run --source=src/main/python/okta_api_script -m pytest src/test/
 	uv run coverage report
 	uv run coverage html
 
-# Check configuration consistency
-check-config:
-	@echo "Checking configuration consistency..."
-	python scripts/check_coverage_config.py
-
 # Run linting
-lint:
-	@echo "Running linting..."
-	uv run flake8 src/ tests/
+lint: ## Lint code with ruff
+	@echo "Running linting with ruff..."
+	uv run ruff check src/main/python/ src/test/
 
 # Format code
-format:
+format: ## Format code with black
 	@echo "Formatting code..."
-	uv run black src/ tests/
+	uv run black src/main/python/ src/test/
 
 # Type checking
-check:
+check: ## Run type checking with mypy
 	@echo "Running type checking..."
-	uv run mypy src/
+	uv run mypy src/main/python/
+
+# Fix code issues (ruff and black formatting)
+fix: ## Fix code issues with ruff and black
+	@echo "Fixing code with ruff and black..."
+	uv run ruff check --fix src/main/python/ src/test/
+	uv run black src/main/python/ src/test/
+
+# Build distribution packages
+build: init fix lint check test test-cov ## Build distribution packages for publication
+	@echo "Building distribution packages..."
+	uv build
+	@echo "Build complete! Distribution packages are in the 'dist/' directory."
 
 # Clean up
-clean:
+clean: ## Clean up generated files and cache
 	@echo "Cleaning up..."
-	rm -rf .venv
-	rm -rf __pycache__
-	rm -rf .pytest_cache
-	rm -rf .mypy_cache
-	rm -rf *.egg-info
-	find . -type f -name "*.pyc" -delete
-	find . -type d -name "__pycache__" -delete
+	@rm -rf __pycache__ .pytest_cache .mypy_cache htmlcov *.egg-info dist
+	@find . -type f -name "*.pyc" -delete
+	@find . -type d -name "__pycache__" -delete
+
+clean-venv: ## Remove virtual environment and fully reset workspace
+	@echo "Removing virtual environment and fully resetting workspace..."
+	@rm -rf .venv .coverage .flake8
+	@rm -rf .uv
+	@$(MAKE) clean
+	@echo "Workspace reset complete. Run 'make init' to reinitialize."

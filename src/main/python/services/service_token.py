@@ -1,17 +1,18 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+from typing import Any, cast
+
 import requests
-import os
-from typing import Any
+
 
 def get_service_token(
-    team_name: str, org_name: str, key_id: str, key_secret: str
+    org_name: str, team_name: str, key_id: str, key_secret: str
 ) -> dict[str, Any]:
     """
     Get a service token from Okta API.
 
     Args:
-        team_name: The team name
         org_name: The organization name
+        team_name: The team name
         key_id: The API key ID
         key_secret: The API key secret
 
@@ -29,12 +30,11 @@ def get_service_token(
 
     data = response.json()
 
-    now = datetime.now(timezone.utc)
-    expires_at = datetime.fromisoformat(data["expires_at"].replace('Z', '+00:00'))
+    now = datetime.now(UTC)
+    expires_at = datetime.fromisoformat(data["expires_at"].replace("Z", "+00:00"))
 
     time_diff = expires_at - now
     seconds = int(time_diff.total_seconds())
-    print(f"Token expires in: {seconds} seconds")
+    # print(f"Token expires in: {seconds} seconds")
     data["expires_in"] = seconds
-    return data
-
+    return cast(dict[str, Any], data)

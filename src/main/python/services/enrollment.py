@@ -1,6 +1,6 @@
-from datetime import datetime, timezone
+from typing import Any, cast
+
 import requests
-from typing import Any
 
 
 def generate_server_enrollment_token(
@@ -25,8 +25,11 @@ def generate_server_enrollment_token(
     Returns:
         dict: The API response data
     """
-    url = f"https://{org_name}.pam.okta.com/v1/teams/{team_name}/resource_groups/{resource_group_id}/projects/{project_id}/server_enrollment_tokens"
-# # /v1/teams/:team_name/resource_groups/:resource_group_id/projects/:project_id/server_enrollment_tokens
+    url = (
+        f"https://{org_name}.pam.okta.com/v1/teams/{team_name}/resource_groups/"
+        f"{resource_group_id}/projects/{project_id}/server_enrollment_tokens"
+    )
+    # POST endpoint for creating server enrollment tokens
 
     payload = {"description": description}
 
@@ -38,4 +41,4 @@ def generate_server_enrollment_token(
     response = requests.post(url, json=payload, headers=headers)
     response.raise_for_status()  # Raise an exception for bad status codes
 
-    return response.json()
+    return cast(dict[str, Any], response.json())
