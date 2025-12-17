@@ -8,7 +8,7 @@ min_coverage_percentage = 91
 
 [project]
 name = "okta-opa"
-version = "0.1.1"
+version = "0.1.2"
 description = "Python script for working with Okta APIs, esp OPA"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -53,7 +53,7 @@ Issues = "https://github.com/LynkerIntel/okta-opa-script/issues"
 okta-server-enrollment-token = "okta_api_script.cli:cli"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/main/python/okta_api_script"]
+packages = ["src/main/python/okta_api_script", "src/main/python/services" ]
 
 [tool.black]
 line-length = 88
@@ -87,13 +87,13 @@ warn_return_any = false
 [tool.pytest.ini_options]
 minversion = "6.0"
 # Coverage threshold defined in [tool.project-config] section above (91%)
-addopts = "-ra -q --cov=src/main/python/okta_api_script --cov-report=term-missing --cov-fail-under=91"
+addopts = "-ra -q --cov=src/main/python/ --cov-report=term-missing --cov-fail-under=91"
 testpaths = [
     "src/test/python",
 ]
 
 [tool.coverage.run]
-source = ["src/main/python/okta_api_script"]
+source = ["src/main/python/"]
 branch = true
 
 [tool.coverage.report]

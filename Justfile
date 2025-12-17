@@ -37,12 +37,12 @@ test:
 # Run tests with coverage report
 test-cov: 
     @echo "Running tests with coverage..."
-    uv run pytest --cov=src/main/python/okta_api_script --cov-report=html --cov-report=term
+    uv run pytest --cov=src/main/python/ --cov-report=html --cov-report=term
 
 # Run coverage using coverage.py directly
 coverage:
     @echo "Running coverage with coverage.py..."
-    uv run coverage run --source=src/main/python/okta_api_script -m pytest src/test/
+    uv run coverage run --source=src/main/python/ -m pytest src/test/python
     uv run coverage report
     uv run coverage html
 
