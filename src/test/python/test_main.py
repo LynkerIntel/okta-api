@@ -277,5 +277,5 @@ def test_main_no_token_in_response():
                             execute_api_cycle()
 
                             # Verify error was printed to stderr
-                            error_msg = "Configuration error: No token received from generate_server_enrollment_token"
+                            error_msg = "Configuration error: No token received"
                             mock_print.assert_called_with(error_msg, file=sys.stderr)

@@ -7,9 +7,9 @@ build-backend = "hatchling.build"
 min_coverage_percentage = 91
 
 [project]
-name = "okta-api"
+name = "okta-opa"
 version = "0.1.0"
-description = "Python script for working with Okta APIs"
+description = "Python script for working with Okta APIs, esp OPA"
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "Apache-2.0"}
@@ -45,9 +45,9 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/LynkerIntel/okta-api-script"
-Repository = "https://github.com/LynkerIntel/okta-api-script"
-Issues = "https://github.com/LynkerIntel/okta-api-script/issues"
+Homepage = "https://github.com/LynkerIntel/okta-opa-script"
+Repository = "https://github.com/LynkerIntel/okta-opa-script"
+Issues = "https://github.com/LynkerIntel/okta-opa-script/issues"
 
 [project.scripts]
 okta-server-enrollment-token = "okta_api_script.cli:cli"

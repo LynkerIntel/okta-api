@@ -64,7 +64,7 @@ def execute_api_cycle(
         )
         token = et["token"]
         if not token:
-            raise ValueError("No token received from generate_server_enrollment_token")
+            raise ValueError("No token received")
         if output_json:
             print(json.dumps(et, indent=2))
         else:

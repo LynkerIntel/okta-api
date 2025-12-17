@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Command line interface for okta-api-script."""
+"""Command line interface for okta-opa-script."""
 
 import os
 

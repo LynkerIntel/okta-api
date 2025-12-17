@@ -1,3 +1,5 @@
+# Makefile deprecated in favor of justfile, but kept for reference in this commit.
+
 .PHONY: help init install sync run clean clean-venv test test-cov coverage lint format fix check check-config init-dev build
 
 # Default target - show help

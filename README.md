@@ -2,6 +2,10 @@
 
 A Python package for calling Okta APIs using the requests module.
 
+This package has the following scripts defined by the `pyproject.toml` file:
+
+- `okta-server-enrollment-token`: Generates a server enrollment token for a specified project within an Okta team.  This token can be used to enroll servers into Okta for identity and access management. 
+
 ## Project Structure
 
 ```
@@ -17,13 +21,13 @@ okta/
 │       ├── __init__.py
 │       └── test_main.py         # Unit tests
 ├── pyproject.toml           # Project configuration
-├── Makefile                 # Build automation
+├── justfile                 # Build automation
 └── README.md               # This file
 ```
 
 ## Setup
 
-0. This project is meant to be developed using `direnv` for environment variable management. Make sure you have `direnv` installed and configured in your shell, or that you are using the provided devcontainer setup.
+0. This project is meant to be developed using `direnv` for environment variable management. Ensure you have `direnv` installed and configured in your shell, or that you are using the provided devcontainer setup.  You can also skip this step if you set those values previously or are using some other method to manage environment variables.
 
 1. Initialize the project:
    ```bash
@@ -33,12 +37,12 @@ okta/
    ```
 
    ```bash
-   make init
+   just init
    ```
 
 2. Install development dependencies:
    ```bash
-   make dev-install
+   just dev-install
    ```
 
 3. Set your environment variables:
@@ -49,8 +53,8 @@ okta/
 
 4. Run the script:
    ```bash
-   make run          # Run as Python module
-   make run-cli      # Run via CLI entry point
+   just run          # Run as Python module
+   just run-cli      # Run via CLI entry point
    ```
 
 ## Script Overview
@@ -66,7 +70,7 @@ The main script (`okta_api_script.main`) orchestrates the Okta API workflow:
 
 #### As a Python Module
 ```bash
-make run
+just run
 ```
 
 #### Programmatically
@@ -111,26 +115,8 @@ All environment variables must be set for the script to run successfully. You ca
 - `.envrc` file (with `direnv`)
 - Command line arguments to the `execute_api_cycle()` function
 
-## Available Make Targets
+## Listing Available Just Targets
 
-- `make init` - Initialize the project with uv
-- `make init-dev` - Install development dependencies
-- `make run` - Run the API script as Python module
-- `make run-cli` - Run the API script via CLI entry point
-- `make test` - Run tests with pytest
-- `make test-cov` - Run tests with code coverage reporting
-- `make lint` - Run linting with ruff
-- `make format` - Format code with black
-- `make check` - Run type checking with mypy
-- `make clean` - Clean up generated files
-- `make clean-venv` - Remove virtual environment
-
-## Package Features
-
-- ✅ Proper Python package structure with src layout
-- ✅ Environment variable configuration
-- ✅ Error handling and validation
-- ✅ Type hints and documentation
-- ✅ Unit tests with pytest
-- ✅ CLI entry point
-- ✅ Development tools (black, ruff, mypy)
+```bash
+just --list
+```
