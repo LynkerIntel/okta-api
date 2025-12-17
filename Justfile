@@ -9,11 +9,6 @@ init:
     uv sync --extra dev
     @echo "Project initialized! Activate the virtual environment with: source .venv/bin/activate"
 
-# Install dependencies
-install:
-    @echo "Installing dependencies..."
-    uv add requests
-
 # Sync all dependencies from pyproject.toml
 sync:
     @echo "Syncing dependencies from pyproject.toml..."
@@ -35,12 +30,12 @@ init-dev:
     uv sync --extra dev
 
 # Run tests
-test:
+test: 
     @echo "Running tests..."
     uv run pytest
 
 # Run tests with coverage report
-test-cov:
+test-cov: 
     @echo "Running tests with coverage..."
     uv run pytest --cov=src/main/python/okta_api_script --cov-report=html --cov-report=term
 
@@ -81,9 +76,10 @@ build: init fix lint check test test-cov
 # Clean up generated files and cache
 clean:
     @echo "Cleaning up..."
-    rm -rf __pycache__ .pytest_cache .mypy_cache htmlcov *.egg-info dist
+    rm -rf __pycache__ .pytest_cache .mypy_cache htmlcov *.egg-info dist .ruff_cache
     find . -type f -name "*.pyc" -delete
     find . -type d -name "__pycache__" -delete
+
 
 # Remove virtual environment and fully reset workspace
 clean-venv: clean

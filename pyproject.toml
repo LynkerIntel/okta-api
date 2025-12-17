@@ -14,8 +14,8 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"
 authors = [
-    {name = "Lynker Pypi Admin", email = "pypi@lynker.com"}
-    {name = "Mykel Alvis", email = "malvis@lynker.com"},
+    {name = "Lynker Pypi Admin", email = "pypi@lynker.com"},
+    {name = "Mykel Alvis", email = "malvis@lynker.com"}
 ]
 keywords = ["api", "requests", "okta"]
 classifiers = [
@@ -29,7 +29,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "requests>=2.31.0",
+    "requests>=2.32.0",
     "click>=8.0.0",
 ]
 
@@ -148,3 +148,4 @@ ignore = [
 
 [tool.ruff.lint.isort]
 known-first-party = ["okta_api_script"]
+
