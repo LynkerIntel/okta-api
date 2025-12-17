@@ -1,4 +1,5 @@
-FROM infrastructurebuilder/minimal_alma_dc:latest
+FROM infrastructurebuilder/ansible-container:0.16
+
 RUN <<SCRIPT2
   mkdir ${HOME}/.gnupg
   . ${HOME}/.bashrc
