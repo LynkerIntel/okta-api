@@ -8,12 +8,12 @@ from unittest.mock import Mock, patch
 import pytest
 import requests
 
-from okta_api_script.main import execute_api_cycle, get_service_token
+from okta_api.main import execute_api_cycle, get_service_token
 
 
 def test_get_service_token_success():
     """Test successful API call."""
-    with patch("okta_api_script.main.requests.post") as mock_post:
+    with patch("okta_api.main.requests.post") as mock_post:
         mock_response = Mock()
         mock_response.json.return_value = {
             "bearer_token": "test-token",
@@ -53,15 +53,15 @@ def test_main_success():
             "KEY_SECRET": "test-secret",
         },
     ):
-        with patch("okta_api_script.main.get_service_token") as mock_get_token:
+        with patch("okta_api.main.get_service_token") as mock_get_token:
             with patch(
-                "okta_api_script.main.get_resource_groups_by_team"
+                "okta_api.main.get_resource_groups_by_team"
             ) as mock_get_rg:
                 with patch(
-                    "okta_api_script.main.get_projects_by_resource_group"
+                    "okta_api.main.get_projects_by_resource_group"
                 ) as mock_get_projects:
                     with patch(
-                        "okta_api_script.main.generate_server_enrollment_token"
+                        "okta_api.main.generate_server_enrollment_token"
                     ) as mock_gen_token:
                         mock_get_token.return_value = {
                             "bearer_token": "test-token",
@@ -91,7 +91,7 @@ def test_cli_module_structure():
     try:
         # We can't directly test the if __name__ == "__main__" block
         # but we can verify the module imports execute_api_cycle correctly
-        from okta_api_script.main import execute_api_cycle as api_cycle
+        from okta_api.main import execute_api_cycle as api_cycle
 
         # Verify execute_api_cycle is callable
         assert callable(api_cycle)
@@ -111,7 +111,7 @@ def test_main_request_exception():
             "KEY_SECRET": "test-secret",
         },
     ):
-        with patch("okta_api_script.main.get_service_token") as mock_get_token:
+        with patch("okta_api.main.get_service_token") as mock_get_token:
             mock_get_token.side_effect = requests.exceptions.RequestException(
                 "Connection error"
             )
@@ -136,7 +136,7 @@ def test_main_value_error_from_api():
             "KEY_SECRET": "test-secret",
         },
     ):
-        with patch("okta_api_script.main.get_service_token") as mock_get_token:
+        with patch("okta_api.main.get_service_token") as mock_get_token:
             mock_get_token.side_effect = ValueError("Invalid response format")
             with patch("builtins.print") as mock_print:
                 execute_api_cycle()
@@ -161,15 +161,15 @@ def test_main_success_with_json_output():
             "KEY_SECRET": "test-secret",
         },
     ):
-        with patch("okta_api_script.main.get_service_token") as mock_get_token:
+        with patch("okta_api.main.get_service_token") as mock_get_token:
             with patch(
-                "okta_api_script.main.get_resource_groups_by_team"
+                "okta_api.main.get_resource_groups_by_team"
             ) as mock_get_rg:
                 with patch(
-                    "okta_api_script.main.get_projects_by_resource_group"
+                    "okta_api.main.get_projects_by_resource_group"
                 ) as mock_get_projects:
                     with patch(
-                        "okta_api_script.main.generate_server_enrollment_token"
+                        "okta_api.main.generate_server_enrollment_token"
                     ) as mock_gen_token:
                         with patch("builtins.print") as mock_print:
                             mock_get_token.return_value = {
@@ -208,15 +208,15 @@ def test_main_success_without_json_output():
             "KEY_SECRET": "test-secret",
         },
     ):
-        with patch("okta_api_script.main.get_service_token") as mock_get_token:
+        with patch("okta_api.main.get_service_token") as mock_get_token:
             with patch(
-                "okta_api_script.main.get_resource_groups_by_team"
+                "okta_api.main.get_resource_groups_by_team"
             ) as mock_get_rg:
                 with patch(
-                    "okta_api_script.main.get_projects_by_resource_group"
+                    "okta_api.main.get_projects_by_resource_group"
                 ) as mock_get_projects:
                     with patch(
-                        "okta_api_script.main.generate_server_enrollment_token"
+                        "okta_api.main.generate_server_enrollment_token"
                     ) as mock_gen_token:
                         with patch("builtins.print") as mock_print:
                             mock_get_token.return_value = {
@@ -251,15 +251,15 @@ def test_main_no_token_in_response():
             "KEY_SECRET": "test-secret",
         },
     ):
-        with patch("okta_api_script.main.get_service_token") as mock_get_token:
+        with patch("okta_api.main.get_service_token") as mock_get_token:
             with patch(
-                "okta_api_script.main.get_resource_groups_by_team"
+                "okta_api.main.get_resource_groups_by_team"
             ) as mock_get_rg:
                 with patch(
-                    "okta_api_script.main.get_projects_by_resource_group"
+                    "okta_api.main.get_projects_by_resource_group"
                 ) as mock_get_projects:
                     with patch(
-                        "okta_api_script.main.generate_server_enrollment_token"
+                        "okta_api.main.generate_server_enrollment_token"
                     ) as mock_gen_token:
                         with patch("builtins.print") as mock_print:
                             mock_get_token.return_value = {

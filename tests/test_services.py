@@ -14,16 +14,16 @@ try:
         get_projects_by_resource_group,
         get_resource_groups_by_team,
     )
-    from services.service_token import get_service_token
+    from services.service_token import get_service_token, _get_api_config
 except ImportError:
     # Fallback for when running tests from different directories
-    from okta_api_script.services.enrollment import generate_server_enrollment_token
-    from okta_api_script.services.projects import get_projects_by_team
-    from okta_api_script.services.resource_groups import (
+    from okta_api.services.enrollment import generate_server_enrollment_token
+    from okta_api.services.projects import get_projects_by_team
+    from okta_api.services.resource_groups import (
         get_projects_by_resource_group,
         get_resource_groups_by_team,
     )
-    from okta_api_script.services.service_token import get_service_token
+    from okta_api.services.service_token import get_service_token, _get_api_config
 
 
 class TestServiceToken:
@@ -84,6 +84,101 @@ class TestServiceToken:
             # expires_in should be positive and large (years into the future)
             assert result["expires_in"] > 0
             assert result["expires_in"] > 86400  # More than a day
+
+
+class TestGetApiConfig:
+    """Tests for _get_api_config function."""
+
+    def test_get_api_config_with_explicit_params(self):
+        """Test _get_api_config with explicit parameters."""
+        with patch("services.service_token.get_service_token") as mock_token:
+            mock_token.return_value = "test-token"
+
+            base_url, headers = _get_api_config(
+                "test-org", "test-team", "test-key", "test-secret"
+            )
+
+            assert base_url == "https://test-org.pam.okta.com/v1/teams/test-team/"
+            assert headers["Authorization"] == "Bearer test-token"
+            assert headers["Content-Type"] == "application/json"
+            mock_token.assert_called_once_with("test-org", "test-team", "test-key", "test-secret")
+
+    def test_get_api_config_with_env_vars(self):
+        """Test _get_api_config using environment variables."""
+        with patch.dict(
+            "os.environ",
+            {
+                "OKTA_ORG": "env-org",
+                "OKTA_TEAM": "env-team",
+                "KEY_ID": "env-key",
+                "KEY_SECRET": "env-secret",
+            },
+        ), patch("services.service_token.get_service_token") as mock_token:
+            mock_token.return_value = "env-token"
+
+            base_url, headers = _get_api_config()
+
+            assert base_url == "https://env-org.pam.okta.com/v1/teams/env-team/"
+            assert headers["Authorization"] == "Bearer env-token"
+            mock_token.assert_called_once_with("env-org", "env-team", "env-key", "env-secret")
+
+    def test_get_api_config_missing_org_name(self):
+        """Test _get_api_config raises error when org_name is missing."""
+        with patch.dict("os.environ", {}, clear=True):
+            with pytest.raises(ValueError, match="org_name and team_name variables must be set"):
+                _get_api_config()
+
+    def test_get_api_config_missing_team_name(self):
+        """Test _get_api_config raises error when team_name is missing."""
+        with patch.dict("os.environ", {"OKTA_ORG": "test-org"}, clear=True):
+            with pytest.raises(ValueError, match="org_name and team_name variables must be set"):
+                _get_api_config()
+
+    def test_get_api_config_missing_key_id(self):
+        """Test _get_api_config raises error when key_id is missing."""
+        with patch.dict(
+            "os.environ",
+            {"OKTA_ORG": "test-org", "OKTA_TEAM": "test-team"},
+            clear=True,
+        ):
+            with pytest.raises(ValueError, match="key_id and key_secret variables must be set"):
+                _get_api_config()
+
+    def test_get_api_config_missing_key_secret(self):
+        """Test _get_api_config raises error when key_secret is missing."""
+        with patch.dict(
+            "os.environ",
+            {
+                "OKTA_ORG": "test-org",
+                "OKTA_TEAM": "test-team",
+                "KEY_ID": "test-key",
+            },
+            clear=True,
+        ):
+            with pytest.raises(ValueError, match="key_id and key_secret variables must be set"):
+                _get_api_config()
+
+    def test_get_api_config_explicit_params_override_env(self):
+        """Test that explicit parameters override environment variables."""
+        with patch.dict(
+            "os.environ",
+            {
+                "OKTA_ORG": "env-org",
+                "OKTA_TEAM": "env-team",
+                "KEY_ID": "env-key",
+                "KEY_SECRET": "env-secret",
+            },
+        ), patch("services.service_token.get_service_token") as mock_token:
+            mock_token.return_value = "explicit-token"
+
+            base_url, headers = _get_api_config(
+                "explicit-org", "explicit-team", "explicit-key", "explicit-secret"
+            )
+
+            assert base_url == "https://explicit-org.pam.okta.com/v1/teams/explicit-team/"
+            mock_token.assert_called_once_with(
+                "explicit-org", "explicit-team", "explicit-key", "explicit-secret"
+            )
 
 
 class TestResourceGroups:

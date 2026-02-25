@@ -17,7 +17,7 @@ sync:
 # Run the API script
 run:
     @echo "Running API script..."
-    uv run python -m src.main.python.okta_api_script.main
+    PYTHONPATH=src uv run python -m okta_api.main
 
 # Run the API script via CLI entry point
 run-cli:
@@ -37,35 +37,35 @@ test:
 # Run tests with coverage report
 test-cov: 
     @echo "Running tests with coverage..."
-    uv run pytest --cov=src/main/python/ --cov-report=html --cov-report=term
+    uv run pytest --cov=src/ --cov-report=html --cov-report=term
 
 # Run coverage using coverage.py directly
 coverage:
     @echo "Running coverage with coverage.py..."
-    uv run coverage run --source=src/main/python/ -m pytest src/test/python
+    uv run coverage run --source=src/ -m pytest tests
     uv run coverage report
     uv run coverage html
 
 # Lint code with ruff
 lint:
     @echo "Running linting with ruff..."
-    uv run ruff check src/main/python/ src/test/
+    uv run ruff check src/ tests
 
 # Format code with black
 format:
     @echo "Formatting code..."
-    uv run black src/main/python/ src/test/python
+    uv run black src/ tests
 
 # Run type checking with mypy
 check:
     @echo "Running type checking..."
-    uv run mypy src/main/python/
+    uv run mypy src/
 
 # Fix code issues with ruff and black
 fix:
     @echo "Fixing code with ruff and black..."
-    uv run ruff check --fix src/main/python/ src/test/python
-    uv run black src/main/python/ src/test/python
+    uv run ruff check --fix src/ tests
+    uv run black src/ tests
 
 # Build distribution packages for publication
 build: init fix lint check test test-cov

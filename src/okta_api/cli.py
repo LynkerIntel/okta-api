@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 """Command line interface for okta-opa-script."""
 
-import os
+import os 
 
 import click
 
-from okta_api_script.main import execute_api_cycle
-
+from okta_api.main import execute_api_cycle
 
 @click.command()
 @click.option(

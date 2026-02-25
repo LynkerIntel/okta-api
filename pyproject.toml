@@ -50,10 +50,10 @@ Repository = "https://github.com/LynkerIntel/okta-opa-script"
 Issues = "https://github.com/LynkerIntel/okta-opa-script/issues"
 
 [project.scripts]
-okta-server-enrollment-token = "okta_api_script.cli:cli"
+okta-server-enrollment-token = "okta_api.cli:cli"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/main/python/okta_api_script", "src/main/python/services" ]
+packages = ["okta_api", "services"]
 
 [tool.black]
 line-length = 88
@@ -81,19 +81,20 @@ disallow_untyped_defs = true
 
 # Allow Any returns for JSON responses since we can't predict the structure
 [[tool.mypy.overrides]]
-module = "okta_api_script.main"
+module = "okta_api.main"
 warn_return_any = false
 
 [tool.pytest.ini_options]
 minversion = "6.0"
+pythonpath = ["src"]
 # Coverage threshold defined in [tool.project-config] section above (91%)
-addopts = "-ra -q --cov=src/main/python/ --cov-report=term-missing --cov-fail-under=91"
+addopts = "-ra -q --cov=src/ --cov-report=term-missing --cov-fail-under=91"
 testpaths = [
-    "src/test/python",
+    "tests",
 ]
 
 [tool.coverage.run]
-source = ["src/main/python/"]
+source = ["src/"]
 branch = true
 
 [tool.coverage.report]
@@ -115,8 +116,8 @@ show_missing = true
 line-length = 88
 target-version = "py311"
 include = [
-    "src/main/python/**/*.py",
-    "src/test/python/**/*.py",
+    "src/**/*.py",
+    "tests/**/*.py",
 ]
 exclude = [
     ".git",
@@ -147,5 +148,5 @@ ignore = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["okta_api_script"]
+known-first-party = ["okta_api"]
 

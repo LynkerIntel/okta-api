@@ -2,7 +2,7 @@
 
 from click.testing import CliRunner
 
-from okta_api_script.cli import cli
+from okta_api.cli import cli
 
 
 def test_cli_has_main():
