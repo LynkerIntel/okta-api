@@ -22,7 +22,7 @@ run:
 # Run the API script via CLI entry point
 run-cli:
     @echo "Running API script via CLI..."
-    uv run okta-script
+    uv run okta-opa-cli
 
 # Initialize development environment
 init-dev:

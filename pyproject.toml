@@ -39,9 +39,9 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/LynkerIntel/okta-opa-script"
-Repository = "https://github.com/LynkerIntel/okta-opa-script"
-Issues = "https://github.com/LynkerIntel/okta-opa-script/issues"
+Homepage = "https://github.com/LynkerIntel/okta-api"
+Repository = "https://github.com/LynkerIntel/okta-api"
+Issues = "https://github.com/LynkerIntel/okta-api/issues"
 
 [project.scripts]
 okta-opa-cli = "okta_opa.cli:cli"
@@ -51,8 +51,6 @@ okta-opa-cli = "okta_opa.cli:cli"
 known-first-party = ["okta_opa"]
 
 [build-system]
-#requires = ["hatchling >= 1.27.2"]
-#build-backend = "hatchling.build"
 requires = ["uv_build>=0.9.22,<0.10.0"]
 build-backend = "uv_build"
 
