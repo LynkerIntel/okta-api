@@ -8,7 +8,7 @@ import requests
 # These imports will work if services are in PYTHONPATH
 # The test should be run from the project root with proper PYTHONPATH setup
 try:
-    from services.group import (
+    from okta_opa.services.group import (
         add_or_remove_group_user,
         create_or_read_group,
         delete_group_from_team,
@@ -18,7 +18,7 @@ try:
     )
 except ImportError:
     # Fallback for when running tests from different directories
-    from okta_api.services.group import (
+    from okta_opa.services.group import (
         add_or_remove_group_user,
         create_or_read_group,
         delete_group_from_team,
@@ -33,9 +33,10 @@ class TestDeleteGroupFromTeam:
 
     def test_delete_group_success(self):
         """Test successful group deletion."""
-        with patch("services.group._get_api_config") as mock_config, patch(
-            "services.group.requests.delete"
-        ) as mock_delete:
+        with (
+            patch("okta_opa.services.group._get_api_config") as mock_config,
+            patch("okta_opa.services.group.requests.delete") as mock_delete,
+        ):
             mock_config.return_value = (
                 "https://test-org.pam.okta.com/v1/teams/test-team",
                 {"Authorization": "Bearer token"},
@@ -53,9 +54,10 @@ class TestDeleteGroupFromTeam:
 
     def test_delete_group_with_credentials(self):
         """Test group deletion with explicit credentials."""
-        with patch("services.group._get_api_config") as mock_config, patch(
-            "services.group.requests.delete"
-        ) as mock_delete:
+        with (
+            patch("okta_opa.services.group._get_api_config") as mock_config,
+            patch("okta_opa.services.group.requests.delete") as mock_delete,
+        ):
             mock_config.return_value = (
                 "https://test-org.pam.okta.com/v1/teams/test-team",
                 {"Authorization": "Bearer token"},
@@ -76,9 +78,10 @@ class TestDeleteGroupFromTeam:
 
     def test_delete_group_failure(self):
         """Test group deletion failure."""
-        with patch("services.group._get_api_config") as mock_config, patch(
-            "services.group.requests.delete"
-        ) as mock_delete:
+        with (
+            patch("okta_opa.services.group._get_api_config") as mock_config,
+            patch("okta_opa.services.group.requests.delete") as mock_delete,
+        ):
             mock_config.return_value = (
                 "https://test-org.pam.okta.com/v1/teams/test-team",
                 {"Authorization": "Bearer token"},
@@ -98,9 +101,10 @@ class TestListAllUsersForGroup:
 
     def test_list_users_success(self):
         """Test successful user list retrieval."""
-        with patch("services.group._get_api_config") as mock_config, patch(
-            "services.group.requests.get"
-        ) as mock_get:
+        with (
+            patch("okta_opa.services.group._get_api_config") as mock_config,
+            patch("okta_opa.services.group.requests.get") as mock_get,
+        ):
             mock_config.return_value = (
                 "https://test-org.pam.okta.com/v1/teams/test-team",
                 {"Authorization": "Bearer token"},
@@ -123,9 +127,10 @@ class TestListAllUsersForGroup:
 
     def test_list_users_empty(self):
         """Test listing users when group has no users."""
-        with patch("services.group._get_api_config") as mock_config, patch(
-            "services.group.requests.get"
-        ) as mock_get:
+        with (
+            patch("okta_opa.services.group._get_api_config") as mock_config,
+            patch("okta_opa.services.group.requests.get") as mock_get,
+        ):
             mock_config.return_value = (
                 "https://test-org.pam.okta.com/v1/teams/test-team",
                 {"Authorization": "Bearer token"},
@@ -141,9 +146,10 @@ class TestListAllUsersForGroup:
 
     def test_list_users_no_list_key(self):
         """Test listing users when response has no list key."""
-        with patch("services.group._get_api_config") as mock_config, patch(
-            "services.group.requests.get"
-        ) as mock_get:
+        with (
+            patch("okta_opa.services.group._get_api_config") as mock_config,
+            patch("okta_opa.services.group.requests.get") as mock_get,
+        ):
             mock_config.return_value = (
                 "https://test-org.pam.okta.com/v1/teams/test-team",
                 {"Authorization": "Bearer token"},
@@ -159,9 +165,10 @@ class TestListAllUsersForGroup:
 
     def test_list_users_http_error(self):
         """Test listing users with HTTP error."""
-        with patch("services.group._get_api_config") as mock_config, patch(
-            "services.group.requests.get"
-        ) as mock_get:
+        with (
+            patch("okta_opa.services.group._get_api_config") as mock_config,
+            patch("okta_opa.services.group.requests.get") as mock_get,
+        ):
             mock_config.return_value = (
                 "https://test-org.pam.okta.com/v1/teams/test-team",
                 {"Authorization": "Bearer token"},
@@ -181,9 +188,10 @@ class TestAddOrRemoveGroupUser:
 
     def test_add_user_success(self):
         """Test successful user addition to group."""
-        with patch("services.group._get_api_config") as mock_config, patch(
-            "services.group.requests.post"
-        ) as mock_post:
+        with (
+            patch("okta_opa.services.group._get_api_config") as mock_config,
+            patch("okta_opa.services.group.requests.post") as mock_post,
+        ):
             mock_config.return_value = (
                 "https://test-org.pam.okta.com/v1/teams/test-team",
                 {"Authorization": "Bearer token"},
@@ -193,7 +201,11 @@ class TestAddOrRemoveGroupUser:
             mock_post.return_value = mock_response
 
             result = add_or_remove_group_user(
-                "group-123", "user-456", is_add=True, org_name="test-org", team_name="test-team"
+                "group-123",
+                "user-456",
+                is_add=True,
+                org_name="test-org",
+                team_name="test-team",
             )
 
             assert result is True
@@ -201,9 +213,10 @@ class TestAddOrRemoveGroupUser:
 
     def test_remove_user_success(self):
         """Test successful user removal from group."""
-        with patch("services.group._get_api_config") as mock_config, patch(
-            "services.group.requests.delete"
-        ) as mock_delete:
+        with (
+            patch("okta_opa.services.group._get_api_config") as mock_config,
+            patch("okta_opa.services.group.requests.delete") as mock_delete,
+        ):
             mock_config.return_value = (
                 "https://test-org.pam.okta.com/v1/teams/test-team",
                 {"Authorization": "Bearer token"},
@@ -213,7 +226,11 @@ class TestAddOrRemoveGroupUser:
             mock_delete.return_value = mock_response
 
             result = add_or_remove_group_user(
-                "group-123", "user-456", is_add=False, org_name="test-org", team_name="test-team"
+                "group-123",
+                "user-456",
+                is_add=False,
+                org_name="test-org",
+                team_name="test-team",
             )
 
             assert result is True
@@ -221,9 +238,10 @@ class TestAddOrRemoveGroupUser:
 
     def test_add_user_failure(self):
         """Test user addition failure."""
-        with patch("services.group._get_api_config") as mock_config, patch(
-            "services.group.requests.post"
-        ) as mock_post:
+        with (
+            patch("okta_opa.services.group._get_api_config") as mock_config,
+            patch("okta_opa.services.group.requests.post") as mock_post,
+        ):
             mock_config.return_value = (
                 "https://test-org.pam.okta.com/v1/teams/test-team",
                 {"Authorization": "Bearer token"},
@@ -234,16 +252,21 @@ class TestAddOrRemoveGroupUser:
             mock_post.return_value = mock_response
 
             result = add_or_remove_group_user(
-                "group-123", "user-456", is_add=True, org_name="test-org", team_name="test-team"
+                "group-123",
+                "user-456",
+                is_add=True,
+                org_name="test-org",
+                team_name="test-team",
             )
 
             assert result is False
 
     def test_remove_user_failure(self):
         """Test user removal failure."""
-        with patch("services.group._get_api_config") as mock_config, patch(
-            "services.group.requests.delete"
-        ) as mock_delete:
+        with (
+            patch("okta_opa.services.group._get_api_config") as mock_config,
+            patch("okta_opa.services.group.requests.delete") as mock_delete,
+        ):
             mock_config.return_value = (
                 "https://test-org.pam.okta.com/v1/teams/test-team",
                 {"Authorization": "Bearer token"},
@@ -254,7 +277,11 @@ class TestAddOrRemoveGroupUser:
             mock_delete.return_value = mock_response
 
             result = add_or_remove_group_user(
-                "group-123", "user-456", is_add=False, org_name="test-org", team_name="test-team"
+                "group-123",
+                "user-456",
+                is_add=False,
+                org_name="test-org",
+                team_name="test-team",
             )
 
             assert result is False
@@ -265,9 +292,10 @@ class TestGetRolesForTeam:
 
     def test_get_roles_success(self):
         """Test successful roles retrieval."""
-        with patch("services.group._get_api_config") as mock_config, patch(
-            "services.group.requests.get"
-        ) as mock_get:
+        with (
+            patch("okta_opa.services.group._get_api_config") as mock_config,
+            patch("okta_opa.services.group.requests.get") as mock_get,
+        ):
             mock_config.return_value = (
                 "https://test-org.pam.okta.com/v1/teams/test-team",
                 {"Authorization": "Bearer token"},
@@ -290,9 +318,10 @@ class TestGetRolesForTeam:
 
     def test_get_roles_empty(self):
         """Test roles retrieval when no roles exist."""
-        with patch("services.group._get_api_config") as mock_config, patch(
-            "services.group.requests.get"
-        ) as mock_get:
+        with (
+            patch("okta_opa.services.group._get_api_config") as mock_config,
+            patch("okta_opa.services.group.requests.get") as mock_get,
+        ):
             mock_config.return_value = (
                 "https://test-org.pam.okta.com/v1/teams/test-team",
                 {"Authorization": "Bearer token"},
@@ -308,9 +337,10 @@ class TestGetRolesForTeam:
 
     def test_get_roles_no_list_key(self):
         """Test roles retrieval when response has no list key."""
-        with patch("services.group._get_api_config") as mock_config, patch(
-            "services.group.requests.get"
-        ) as mock_get:
+        with (
+            patch("okta_opa.services.group._get_api_config") as mock_config,
+            patch("okta_opa.services.group.requests.get") as mock_get,
+        ):
             mock_config.return_value = (
                 "https://test-org.pam.okta.com/v1/teams/test-team",
                 {"Authorization": "Bearer token"},
@@ -326,9 +356,10 @@ class TestGetRolesForTeam:
 
     def test_get_roles_http_error(self):
         """Test roles retrieval with HTTP error."""
-        with patch("services.group._get_api_config") as mock_config, patch(
-            "services.group.requests.get"
-        ) as mock_get:
+        with (
+            patch("okta_opa.services.group._get_api_config") as mock_config,
+            patch("okta_opa.services.group.requests.get") as mock_get,
+        ):
             mock_config.return_value = (
                 "https://test-org.pam.okta.com/v1/teams/test-team",
                 {"Authorization": "Bearer token"},
@@ -348,9 +379,10 @@ class TestGetGroupsForTeam:
 
     def test_get_groups_success(self):
         """Test successful groups retrieval."""
-        with patch("services.group._get_api_config") as mock_config, patch(
-            "services.group.requests.get"
-        ) as mock_get:
+        with (
+            patch("okta_opa.services.group._get_api_config") as mock_config,
+            patch("okta_opa.services.group.requests.get") as mock_get,
+        ):
             mock_config.return_value = (
                 "https://test-org.pam.okta.com/v1/teams/test-team",
                 {"Authorization": "Bearer token"},
@@ -373,9 +405,10 @@ class TestGetGroupsForTeam:
 
     def test_get_groups_empty(self):
         """Test groups retrieval when no groups exist."""
-        with patch("services.group._get_api_config") as mock_config, patch(
-            "services.group.requests.get"
-        ) as mock_get:
+        with (
+            patch("okta_opa.services.group._get_api_config") as mock_config,
+            patch("okta_opa.services.group.requests.get") as mock_get,
+        ):
             mock_config.return_value = (
                 "https://test-org.pam.okta.com/v1/teams/test-team",
                 {"Authorization": "Bearer token"},
@@ -391,9 +424,10 @@ class TestGetGroupsForTeam:
 
     def test_get_groups_no_list_key(self):
         """Test groups retrieval when response has no list key."""
-        with patch("services.group._get_api_config") as mock_config, patch(
-            "services.group.requests.get"
-        ) as mock_get:
+        with (
+            patch("okta_opa.services.group._get_api_config") as mock_config,
+            patch("okta_opa.services.group.requests.get") as mock_get,
+        ):
             mock_config.return_value = (
                 "https://test-org.pam.okta.com/v1/teams/test-team",
                 {"Authorization": "Bearer token"},
@@ -409,9 +443,10 @@ class TestGetGroupsForTeam:
 
     def test_get_groups_http_error(self):
         """Test groups retrieval with HTTP error."""
-        with patch("services.group._get_api_config") as mock_config, patch(
-            "services.group.requests.get"
-        ) as mock_get:
+        with (
+            patch("okta_opa.services.group._get_api_config") as mock_config,
+            patch("okta_opa.services.group.requests.get") as mock_get,
+        ):
             mock_config.return_value = (
                 "https://test-org.pam.okta.com/v1/teams/test-team",
                 {"Authorization": "Bearer token"},
@@ -431,21 +466,22 @@ class TestCreateOrReadGroup:
 
     def test_read_existing_group(self):
         """Test reading an existing group."""
-        with patch("services.group._get_api_config") as mock_config, patch(
-            "services.group.requests.get"
-        ) as mock_get:
+        with (
+            patch("okta_opa.services.group._get_api_config") as mock_config,
+            patch("okta_opa.services.group.requests.get") as mock_get,
+        ):
             mock_config.return_value = (
                 "https://test-org.pam.okta.com/v1/teams/test-team",
                 {"Authorization": "Bearer token"},
             )
             mock_response = Mock()
             mock_response.status_code = 200
-            mock_response.json.return_value = [{"id": "group-123", "name": "Test Group"}]
+            mock_response.json.return_value = [
+                {"id": "group-123", "name": "Test Group"}
+            ]
             mock_get.return_value = mock_response
 
-            result = create_or_read_group(
-                "Test Group", "test-org", "test-team"
-            )
+            result = create_or_read_group("Test Group", "test-org", "test-team")
 
             assert result["id"] == "group-123"
             assert result["name"] == "Test Group"
@@ -453,9 +489,11 @@ class TestCreateOrReadGroup:
 
     def test_create_new_group(self):
         """Test creating a new group when it doesn't exist."""
-        with patch("services.group._get_api_config") as mock_config, patch(
-            "services.group.requests.get"
-        ) as mock_get, patch("services.group.requests.post") as mock_post:
+        with (
+            patch("okta_opa.services.group._get_api_config") as mock_config,
+            patch("okta_opa.services.group.requests.get") as mock_get,
+            patch("okta_opa.services.group.requests.post") as mock_post,
+        ):
             mock_config.return_value = (
                 "https://test-org.pam.okta.com/v1/teams/test-team",
                 {"Authorization": "Bearer token"},
@@ -468,13 +506,14 @@ class TestCreateOrReadGroup:
 
             # Post call for creation
             mock_post_response = Mock()
-            mock_post_response.json.return_value = {"id": "group-new", "name": "New Group"}
+            mock_post_response.json.return_value = {
+                "id": "group-new",
+                "name": "New Group",
+            }
             mock_post_response.raise_for_status.return_value = None
             mock_post.return_value = mock_post_response
 
-            result = create_or_read_group(
-                "New Group", "test-org", "test-team"
-            )
+            result = create_or_read_group("New Group", "test-org", "test-team")
 
             assert result["id"] == "group-new"
             assert result["name"] == "New Group"
@@ -483,9 +522,11 @@ class TestCreateOrReadGroup:
 
     def test_create_group_with_roles(self):
         """Test creating a new group with roles."""
-        with patch("services.group._get_api_config") as mock_config, patch(
-            "services.group.requests.get"
-        ) as mock_get, patch("services.group.requests.post") as mock_post:
+        with (
+            patch("okta_opa.services.group._get_api_config") as mock_config,
+            patch("okta_opa.services.group.requests.get") as mock_get,
+            patch("okta_opa.services.group.requests.post") as mock_post,
+        ):
             mock_config.return_value = (
                 "https://test-org.pam.okta.com/v1/teams/test-team",
                 {"Authorization": "Bearer token"},
@@ -518,9 +559,11 @@ class TestCreateOrReadGroup:
 
     def test_create_group_with_credentials(self):
         """Test creating a group with explicit credentials."""
-        with patch("services.group._get_api_config") as mock_config, patch(
-            "services.group.requests.get"
-        ) as mock_get, patch("services.group.requests.post") as mock_post:
+        with (
+            patch("okta_opa.services.group._get_api_config") as mock_config,
+            patch("okta_opa.services.group.requests.get") as mock_get,
+            patch("okta_opa.services.group.requests.post") as mock_post,
+        ):
             mock_config.return_value = (
                 "https://test-org.pam.okta.com/v1/teams/test-team",
                 {"Authorization": "Bearer token"},
@@ -533,7 +576,10 @@ class TestCreateOrReadGroup:
 
             # Post call for creation
             mock_post_response = Mock()
-            mock_post_response.json.return_value = {"id": "group-new", "name": "New Group"}
+            mock_post_response.json.return_value = {
+                "id": "group-new",
+                "name": "New Group",
+            }
             mock_post_response.raise_for_status.return_value = None
             mock_post.return_value = mock_post_response
 
@@ -549,9 +595,11 @@ class TestCreateOrReadGroup:
 
     def test_create_group_failure(self):
         """Test group creation failure."""
-        with patch("services.group._get_api_config") as mock_config, patch(
-            "services.group.requests.get"
-        ) as mock_get, patch("services.group.requests.post") as mock_post:
+        with (
+            patch("okta_opa.services.group._get_api_config") as mock_config,
+            patch("okta_opa.services.group.requests.get") as mock_get,
+            patch("okta_opa.services.group.requests.post") as mock_post,
+        ):
             mock_config.return_value = (
                 "https://test-org.pam.okta.com/v1/teams/test-team",
                 {"Authorization": "Bearer token"},
@@ -564,8 +612,8 @@ class TestCreateOrReadGroup:
 
             # Post call fails
             mock_post_response = Mock()
-            mock_post_response.raise_for_status.side_effect = requests.exceptions.HTTPError(
-                "400 Bad request"
+            mock_post_response.raise_for_status.side_effect = (
+                requests.exceptions.HTTPError("400 Bad request")
             )
             mock_post.return_value = mock_post_response
 

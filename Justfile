@@ -17,7 +17,7 @@ sync:
 # Run the API script
 run:
     @echo "Running API script..."
-    PYTHONPATH=src uv run python -m okta_api.main
+    PYTHONPATH=src uv run python -m okta_opa.main
 
 # Run the API script via CLI entry point
 run-cli:

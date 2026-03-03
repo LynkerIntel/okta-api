@@ -1,1 +1,1 @@
-"""Tests for okta_api package."""
+"""Tests for okta_opa package."""

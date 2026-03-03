@@ -5,12 +5,12 @@ import os
 import sys
 
 import requests
-from services.enrollment import generate_server_enrollment_token
-from services.resource_groups import (
+from .services.enrollment import generate_server_enrollment_token
+from .services.resource_groups import (
     get_projects_by_resource_group,
     get_resource_groups_by_team,
 )
-from services.service_token import get_service_token
+from .services.service_token import get_service_token
 
 
 def execute_api_cycle(

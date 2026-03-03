@@ -12,7 +12,7 @@ This package has the following scripts defined by the `pyproject.toml` file:
 okta/
 ├── src
 │   └── main/python
-│   |    └── okta_api/
+│   |    └── okta_opa/
 │   |       ├── __init__.py
 │   |       ├── main.py          # Main API logic
 │   |       └── cli.py           # Command line interface
@@ -59,7 +59,7 @@ okta/
 
 ## Script Overview
 
-The main script (`okta_api.main`) orchestrates the Okta API workflow:
+The main script (`okta_opa.main`) orchestrates the Okta API workflow:
 
 1. **Authenticates** with Okta using service credentials to obtain a bearer token
 2. **Retrieves** resource groups for your team
@@ -75,7 +75,7 @@ just run
 
 #### Programmatically
 ```python
-from okta_api.main import execute_api_cycle
+from okta_opa.main import execute_api_cycle
 
 execute_api_cycle(
     org_name="your-org",

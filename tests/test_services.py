@@ -8,22 +8,22 @@ import requests
 # These imports will work if services are in PYTHONPATH
 # The test should be run from the project root with proper PYTHONPATH setup
 try:
-    from services.enrollment import generate_server_enrollment_token
-    from services.projects import get_projects_by_team
-    from services.resource_groups import (
+    from okta_opa.services.enrollment import generate_server_enrollment_token
+    from okta_opa.services.projects import get_projects_by_team
+    from okta_opa.services.resource_groups import (
         get_projects_by_resource_group,
         get_resource_groups_by_team,
     )
-    from services.service_token import get_service_token, _get_api_config
+    from okta_opa.services.service_token import get_service_token, _get_api_config
 except ImportError:
     # Fallback for when running tests from different directories
-    from okta_api.services.enrollment import generate_server_enrollment_token
-    from okta_api.services.projects import get_projects_by_team
-    from okta_api.services.resource_groups import (
+    from okta_opa.services.enrollment import generate_server_enrollment_token
+    from okta_opa.services.projects import get_projects_by_team
+    from okta_opa.services.resource_groups import (
         get_projects_by_resource_group,
         get_resource_groups_by_team,
     )
-    from okta_api.services.service_token import get_service_token, _get_api_config
+    from okta_opa.services.service_token import get_service_token, _get_api_config
 
 
 class TestServiceToken:
@@ -31,7 +31,7 @@ class TestServiceToken:
 
     def test_get_service_token_success(self):
         """Test successful service token retrieval."""
-        with patch("services.service_token.requests.post") as mock_post:
+        with patch("okta_opa.services.service_token.requests.post") as mock_post:
             mock_response = Mock()
             mock_response.json.return_value = {
                 "bearer_token": "test-bearer-token",
@@ -55,7 +55,7 @@ class TestServiceToken:
 
     def test_get_service_token_failure(self):
         """Test service token retrieval with HTTP error."""
-        with patch("services.service_token.requests.post") as mock_post:
+        with patch("okta_opa.services.service_token.requests.post") as mock_post:
             mock_response = Mock()
             mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError(
                 "401 Unauthorized"
@@ -67,7 +67,7 @@ class TestServiceToken:
 
     def test_get_service_token_expires_in_calculation(self):
         """Test that expires_in is calculated correctly."""
-        with patch("services.service_token.requests.post") as mock_post:
+        with patch("okta_opa.services.service_token.requests.post") as mock_post:
             mock_response = Mock()
             # Set expires_at to 1 hour in the future
             mock_response.json.return_value = {
@@ -91,7 +91,7 @@ class TestGetApiConfig:
 
     def test_get_api_config_with_explicit_params(self):
         """Test _get_api_config with explicit parameters."""
-        with patch("services.service_token.get_service_token") as mock_token:
+        with patch("okta_opa.services.service_token.get_service_token") as mock_token:
             mock_token.return_value = "test-token"
 
             base_url, headers = _get_api_config(
@@ -101,37 +101,48 @@ class TestGetApiConfig:
             assert base_url == "https://test-org.pam.okta.com/v1/teams/test-team/"
             assert headers["Authorization"] == "Bearer test-token"
             assert headers["Content-Type"] == "application/json"
-            mock_token.assert_called_once_with("test-org", "test-team", "test-key", "test-secret")
+            mock_token.assert_called_once_with(
+                "test-org", "test-team", "test-key", "test-secret"
+            )
 
     def test_get_api_config_with_env_vars(self):
         """Test _get_api_config using environment variables."""
-        with patch.dict(
-            "os.environ",
-            {
-                "OKTA_ORG": "env-org",
-                "OKTA_TEAM": "env-team",
-                "KEY_ID": "env-key",
-                "KEY_SECRET": "env-secret",
-            },
-        ), patch("services.service_token.get_service_token") as mock_token:
+        with (
+            patch.dict(
+                "os.environ",
+                {
+                    "OKTA_ORG": "env-org",
+                    "OKTA_TEAM": "env-team",
+                    "KEY_ID": "env-key",
+                    "KEY_SECRET": "env-secret",
+                },
+            ),
+            patch("okta_opa.services.service_token.get_service_token") as mock_token,
+        ):
             mock_token.return_value = "env-token"
 
             base_url, headers = _get_api_config()
 
             assert base_url == "https://env-org.pam.okta.com/v1/teams/env-team/"
             assert headers["Authorization"] == "Bearer env-token"
-            mock_token.assert_called_once_with("env-org", "env-team", "env-key", "env-secret")
+            mock_token.assert_called_once_with(
+                "env-org", "env-team", "env-key", "env-secret"
+            )
 
     def test_get_api_config_missing_org_name(self):
         """Test _get_api_config raises error when org_name is missing."""
         with patch.dict("os.environ", {}, clear=True):
-            with pytest.raises(ValueError, match="org_name and team_name variables must be set"):
+            with pytest.raises(
+                ValueError, match="org_name and team_name variables must be set"
+            ):
                 _get_api_config()
 
     def test_get_api_config_missing_team_name(self):
         """Test _get_api_config raises error when team_name is missing."""
         with patch.dict("os.environ", {"OKTA_ORG": "test-org"}, clear=True):
-            with pytest.raises(ValueError, match="org_name and team_name variables must be set"):
+            with pytest.raises(
+                ValueError, match="org_name and team_name variables must be set"
+            ):
                 _get_api_config()
 
     def test_get_api_config_missing_key_id(self):
@@ -141,7 +152,9 @@ class TestGetApiConfig:
             {"OKTA_ORG": "test-org", "OKTA_TEAM": "test-team"},
             clear=True,
         ):
-            with pytest.raises(ValueError, match="key_id and key_secret variables must be set"):
+            with pytest.raises(
+                ValueError, match="key_id and key_secret variables must be set"
+            ):
                 _get_api_config()
 
     def test_get_api_config_missing_key_secret(self):
@@ -155,27 +168,34 @@ class TestGetApiConfig:
             },
             clear=True,
         ):
-            with pytest.raises(ValueError, match="key_id and key_secret variables must be set"):
+            with pytest.raises(
+                ValueError, match="key_id and key_secret variables must be set"
+            ):
                 _get_api_config()
 
     def test_get_api_config_explicit_params_override_env(self):
         """Test that explicit parameters override environment variables."""
-        with patch.dict(
-            "os.environ",
-            {
-                "OKTA_ORG": "env-org",
-                "OKTA_TEAM": "env-team",
-                "KEY_ID": "env-key",
-                "KEY_SECRET": "env-secret",
-            },
-        ), patch("services.service_token.get_service_token") as mock_token:
+        with (
+            patch.dict(
+                "os.environ",
+                {
+                    "OKTA_ORG": "env-org",
+                    "OKTA_TEAM": "env-team",
+                    "KEY_ID": "env-key",
+                    "KEY_SECRET": "env-secret",
+                },
+            ),
+            patch("okta_opa.services.service_token.get_service_token") as mock_token,
+        ):
             mock_token.return_value = "explicit-token"
 
             base_url, headers = _get_api_config(
                 "explicit-org", "explicit-team", "explicit-key", "explicit-secret"
             )
 
-            assert base_url == "https://explicit-org.pam.okta.com/v1/teams/explicit-team/"
+            assert (
+                base_url == "https://explicit-org.pam.okta.com/v1/teams/explicit-team/"
+            )
             mock_token.assert_called_once_with(
                 "explicit-org", "explicit-team", "explicit-key", "explicit-secret"
             )
@@ -186,7 +206,7 @@ class TestResourceGroups:
 
     def test_get_resource_groups_by_team_success(self):
         """Test successful resource groups retrieval."""
-        with patch("services.resource_groups.requests.get") as mock_get:
+        with patch("okta_opa.services.resource_groups.requests.get") as mock_get:
             mock_response = Mock()
             mock_response.json.return_value = {
                 "list": [
@@ -212,7 +232,7 @@ class TestResourceGroups:
 
     def test_get_resource_groups_by_team_empty(self):
         """Test resource groups retrieval with empty list."""
-        with patch("services.resource_groups.requests.get") as mock_get:
+        with patch("okta_opa.services.resource_groups.requests.get") as mock_get:
             mock_response = Mock()
             mock_response.json.return_value = {"list": []}
             mock_response.raise_for_status.return_value = None
@@ -224,7 +244,7 @@ class TestResourceGroups:
 
     def test_get_resource_groups_by_team_request_exception(self, capsys):
         """Test resource groups retrieval with request exception."""
-        with patch("services.resource_groups.requests.get") as mock_get:
+        with patch("okta_opa.services.resource_groups.requests.get") as mock_get:
             mock_get.side_effect = requests.exceptions.RequestException(
                 "Connection error"
             )
@@ -237,7 +257,7 @@ class TestResourceGroups:
 
     def test_get_projects_by_resource_group_success(self):
         """Test successful projects retrieval by resource group."""
-        with patch("services.resource_groups.requests.get") as mock_get:
+        with patch("okta_opa.services.resource_groups.requests.get") as mock_get:
             mock_response = Mock()
             mock_response.json.return_value = {
                 "list": [
@@ -265,7 +285,7 @@ class TestResourceGroups:
 
     def test_get_projects_by_resource_group_filters_deleted(self):
         """Test that deleted projects are filtered out."""
-        with patch("services.resource_groups.requests.get") as mock_get:
+        with patch("okta_opa.services.resource_groups.requests.get") as mock_get:
             mock_response = Mock()
             mock_response.json.return_value = {
                 "list": [
@@ -294,7 +314,7 @@ class TestResourceGroups:
 
     def test_get_projects_by_resource_group_empty(self):
         """Test projects retrieval with empty list."""
-        with patch("services.resource_groups.requests.get") as mock_get:
+        with patch("okta_opa.services.resource_groups.requests.get") as mock_get:
             mock_response = Mock()
             mock_response.json.return_value = {"list": []}
             mock_response.raise_for_status.return_value = None
@@ -308,7 +328,7 @@ class TestResourceGroups:
 
     def test_get_projects_by_resource_group_request_exception(self, capsys):
         """Test projects retrieval with request exception."""
-        with patch("services.resource_groups.requests.get") as mock_get:
+        with patch("okta_opa.services.resource_groups.requests.get") as mock_get:
             mock_get.side_effect = requests.exceptions.RequestException(
                 "Connection error"
             )
@@ -327,7 +347,7 @@ class TestProjects:
 
     def test_get_projects_by_team_success(self):
         """Test successful projects retrieval by team."""
-        with patch("services.projects.requests.get") as mock_get:
+        with patch("okta_opa.services.projects.requests.get") as mock_get:
             mock_response = Mock()
             mock_response.json.return_value = [
                 {"id": "proj-1", "name": "Project 1"},
@@ -351,7 +371,7 @@ class TestProjects:
 
     def test_get_projects_by_team_empty(self):
         """Test projects retrieval with empty list."""
-        with patch("services.projects.requests.get") as mock_get:
+        with patch("okta_opa.services.projects.requests.get") as mock_get:
             mock_response = Mock()
             mock_response.json.return_value = []
             mock_response.raise_for_status.return_value = None
@@ -363,7 +383,7 @@ class TestProjects:
 
     def test_get_projects_by_team_request_exception(self, capsys):
         """Test projects retrieval with request exception."""
-        with patch("services.projects.requests.get") as mock_get:
+        with patch("okta_opa.services.projects.requests.get") as mock_get:
             mock_get.side_effect = requests.exceptions.RequestException(
                 "Connection error"
             )
@@ -376,7 +396,7 @@ class TestProjects:
 
     def test_get_projects_by_team_timeout(self, capsys):
         """Test projects retrieval with timeout."""
-        with patch("services.projects.requests.get") as mock_get:
+        with patch("okta_opa.services.projects.requests.get") as mock_get:
             mock_get.side_effect = requests.exceptions.Timeout("Request timeout")
 
             result = get_projects_by_team("test-token", "test-org", "test-team")
@@ -391,7 +411,7 @@ class TestEnrollment:
 
     def test_generate_server_enrollment_token_success(self):
         """Test successful enrollment token generation."""
-        with patch("services.enrollment.requests.post") as mock_post:
+        with patch("okta_opa.services.enrollment.requests.post") as mock_post:
             mock_response = Mock()
             mock_response.json.return_value = {
                 "token": "test-enrollment-token",
@@ -423,7 +443,7 @@ class TestEnrollment:
 
     def test_generate_server_enrollment_token_custom_description(self):
         """Test enrollment token generation with custom description."""
-        with patch("services.enrollment.requests.post") as mock_post:
+        with patch("okta_opa.services.enrollment.requests.post") as mock_post:
             mock_response = Mock()
             mock_response.json.return_value = {
                 "token": "test-enrollment-token",
@@ -449,7 +469,7 @@ class TestEnrollment:
 
     def test_generate_server_enrollment_token_failure(self):
         """Test enrollment token generation with HTTP error."""
-        with patch("services.enrollment.requests.post") as mock_post:
+        with patch("okta_opa.services.enrollment.requests.post") as mock_post:
             mock_response = Mock()
             mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError(
                 "403 Forbidden"
